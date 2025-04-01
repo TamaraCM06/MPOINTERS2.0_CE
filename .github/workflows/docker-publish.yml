@@ -89,8 +89,8 @@ jobs:
       - name: Define image tags
         id: tags
         run: |
-          echo "TAGS=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest,${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}" >> $GITHUB_ENV
-
+          IMAGE_NAME_LOWER=$(echo "${{ env.IMAGE_NAME }}" | tr '[:upper:]' '[:lower:]')
+          echo "TAGS=${{ env.REGISTRY }}/${IMAGE_NAME_LOWER}:latest,${{ env.REGISTRY }}/${IMAGE_NAME_LOWER}:${{ github.sha }}" >> $GITHUB_ENV
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
