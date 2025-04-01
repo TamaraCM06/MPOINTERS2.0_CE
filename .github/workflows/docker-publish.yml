@@ -72,11 +72,11 @@ jobs:
         run: |
           gh api --method PATCH \
             -H "Accept: application/vnd.github.v3+json" \
-
             /user/packages/container/${{ github.repository }}/visibility \
             -f visibility=public
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
