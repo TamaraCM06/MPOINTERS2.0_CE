@@ -72,7 +72,7 @@ jobs:
         run: |
           gh api --method PATCH \
             -H "Accept: application/vnd.github.v3+json" \
-            /repos/${{ github.repository }}/packages/container/${{ github.event.repository }}_image/visibility \
+            /repos/${{ github.repository }}/packages/container/mygrpc/visibility \
             -f visibility=public
             # /user/packages/container/${{ github.repository }}/visibility \
             # -f visibility=public
