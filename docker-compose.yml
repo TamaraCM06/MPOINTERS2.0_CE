@@ -1,0 +1,12 @@
+version: '3'
+services:
+  my_container:
+    image: ghcr.io/tamaracm06/mpointers2.0_ce:latest
+    container_name: grpc_thiscontainer
+    ports:
+      - "9999:99"  # Change the port mapping here
+    volumes:
+      - ./your-local-directory:/path/to/container/directory
+    environment:
+      - MY_ENV_VAR=value  # Any environment variables needed for your container
+    restart: unless-stopped  # Optional: makes the container restart if it fails
