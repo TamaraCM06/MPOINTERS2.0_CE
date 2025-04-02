@@ -59,13 +59,13 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          password: ${{ secrets.GH_PAT }}
 
       - name: Install GitHub CLI
         run: sudo apt update && sudo apt install -y gh
         
       - name: Authenticate GitHub CLI
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+        run: echo "${{ secrets.GH_PAT }}" | gh auth login --with-token
 
       # - name: Make image public
       #   if: github.event_name != 'pull_request'
@@ -75,7 +75,7 @@ jobs:
       #       /repos/${{ github.repository }}/packages/container/${{ env.IMAGE_NAME }}/visibility \
       #       -f visibility=public
       #   env:
-      #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     GH_TOKEN: ${{ secrets.GH_PAT }}
 
 
       # Extract metadata (tags, labels) for Docker
