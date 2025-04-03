@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
 project(myserver)
 
-# set(CMAKE_CXX_STANDARD 17)
-# set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(Protobuf CONFIG REQUIRED)
@@ -26,10 +26,10 @@ target_link_libraries(server protolib)
 add_executable(client src/client.cc)
 target_link_libraries(client protolib)
 
-# add_library(proto_files
-#     build/proto/hello.pb.cc
-#     build/proto/hello.grpc.pb.cc
-# )
+add_library(proto_files
+    build/proto/hello.pb.cc
+    build/proto/hello.grpc.pb.cc
+)
 
-# target_include_directories(proto_files PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/build/proto)
-# target_link_libraries(proto_files PRIVATE protobuf grpc++)
+target_include_directories(proto_files PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/build/proto)
+target_link_libraries(proto_files PRIVATE protobuf grpc++)

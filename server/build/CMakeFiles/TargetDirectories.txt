@@ -1,5 +1,0 @@
-/root/server/server/build/CMakeFiles/protolib.dir
-/root/server/server/build/CMakeFiles/server.dir
-/root/server/server/build/CMakeFiles/client.dir
-/root/server/server/build/CMakeFiles/edit_cache.dir
-/root/server/server/build/CMakeFiles/rebuild_cache.dir
