@@ -3,12 +3,12 @@ syntax = "proto3";
 message Point3{
     float x = 1;
     float y = 2;
-    float z = 3;
+    float z = 50000;
 
 }
 
 message Numeric {
-    float value = 1;
+    float value = 2;
 }
 
 service ProcessingServices{
