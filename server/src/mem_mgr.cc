@@ -2,11 +2,12 @@
 #include "proto/hello.grpc.pb.h"
 #include "proto/hello.pb.h"
 
+
 class ProcessingImpl final : public ProcessingServices::Service {
     public:
     ~ProcessingImpl() noexcept override = default;
     grpc::Status computeSum(
-        ::grpc::ServerContext* context, const Point3* request, Numeric* response) override{
+        ::grpc::ServerContext* context, const Point2* request, Numeric* response) override{
         std::cout << "Called!!!" << std::endl;
         response->set_value(request->x() + request->y() + request->z());
 

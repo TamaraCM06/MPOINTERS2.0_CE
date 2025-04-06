@@ -1,16 +1,17 @@
 syntax = "proto3";
 
-message Point3{
+message Point2{
     float x = 1;
     float y = 2;
     float z = 3000;
 
+
 }
 
 message Numeric {
-    float value = 2;
+    float value = 1;
 }
 
 service ProcessingServices{
-    rpc computeSum(Point3) returns (Numeric){}
+    rpc computeSum(Point2) returns (Numeric){}
 }
