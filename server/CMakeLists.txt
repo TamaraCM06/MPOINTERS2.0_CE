@@ -51,8 +51,8 @@ target_link_libraries(protolib gRPC::grpc++ protobuf::libprotobuf)
 
 
 # Execute Server and Client // Don't Edit
-add_executable(server src/server.cc)
-target_link_libraries(server protolib)
+add_executable(mem_mgr src/mem_mgr.cc)
+target_link_libraries(mem_mgr protolib)
 
 add_executable(client src/client.cc)
 target_link_libraries(client protolib)
