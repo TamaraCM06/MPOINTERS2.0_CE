@@ -17,7 +17,7 @@ int main() {
     Point2 request;
     request.set_x(1.0);
     request.set_y(8.0);
-    request.set_z(100.0);
+    request.set_z(.0);
 
     // Prepare the response
     Numeric response;
