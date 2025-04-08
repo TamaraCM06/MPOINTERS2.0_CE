@@ -1,38 +1,126 @@
 #include <grpcpp/grpcpp.h>
 #include <iostream>
+#include <string>
 #include "proto/hello.grpc.pb.h"
 #include "proto/hello.pb.h"
+#include "parsing/parsing.h"
 
-int main() {
-    // Server address
-    std::string server_address("0.0.0.0:9999");
+int main(int argc, char* argv[]) {
+    // Default server address
+    std::string server_address = "0.0.0.0:9999";
+
+    // Check if a custom port is provided as a command-line argument
+    if (argc > 1) {
+        server_address = "0.0.0.0:" + std::string(argv[1]);
+    }
 
     // Create a channel to connect to the server
     auto channel = grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials());
 
-    // Create a stub for the ProcessingServices service
-    std::unique_ptr<ProcessingServices::Stub> stub = ProcessingServices::NewStub(channel);
+    // Create a stub for the MemoryManager service
+    std::unique_ptr<memory_manager::MemoryManager::Stub> stub = memory_manager::MemoryManager::NewStub(channel);
 
-    // Create a Point3 request
-    Point2 request;
-    request.set_x(1.0);
-    request.set_y(8.0);
-    request.set_z(.0);
+    while (true) {
+        // Read command from the console
+        std::string input;
+        std::cout << "Enter command (create, set, get, increaseRefCount, decreaseRefCount, or exit): ";
+        std::getline(std::cin, input);
 
-    // Prepare the response
-    Numeric response;
+        if (input == "exit") {
+            break;
+        }
 
-    // Create a gRPC context
-    grpc::ClientContext context;
+        try {
+            // Parse the command
+            auto [command, args] = CommandParser::parseCommand(input);
 
-    // Call the computeSum RPC
-    grpc::Status status = stub->computeSum(&context, request, &response);
+            if (command == "create") {
+                auto [size, type] = CommandParser::parseCreate(args);
 
-    // Check the status and print the result
-    if (status.ok()) {
-        std::cout << "Sum: " << response.value() << std::endl;
-    } else {
-        std::cerr << "RPC failed: " << status.error_message() << std::endl;
+                memory_manager::CreateRequest request;
+                request.set_size(size);
+                request.set_type(type);
+
+                memory_manager::CreateResponse response;
+                grpc::ClientContext context;
+
+                grpc::Status status = stub->Create(&context, request, &response);
+                if (status.ok()) {
+                    std::cout << "Create succeeded: ID = " << response.id() << std::endl;
+                    std::cout << "Message: " << response.message() << std::endl;
+                } else {
+                    std::cerr << "Create failed: " << status.error_message() << std::endl;
+                }
+            } else if (command == "set") {
+                auto [id, value] = CommandParser::parseSet(args);
+
+                memory_manager::SetRequest request;
+                request.set_id(id);
+                request.set_value(value);
+
+                memory_manager::SetResponse response;
+                grpc::ClientContext context;
+
+                grpc::Status status = stub->Set(&context, request, &response);
+                if (status.ok()) {
+                    std::cout << "Set succeeded: " << response.message() << std::endl;
+                } else {
+                    std::cerr << "Set failed: " << status.error_message() << std::endl;
+                }
+            } else if (command == "get") {
+                int id = CommandParser::parseGet(args);
+
+                memory_manager::GetRequest request;
+                request.set_id(id);
+
+                memory_manager::GetResponse response;
+                grpc::ClientContext context;
+
+                grpc::Status status = stub->Get(&context, request, &response);
+                if (status.ok()) {
+                    std::cout << "Get succeeded: Value = " << response.value() << std::endl;
+                    std::cout << "Message: " << response.message() << std::endl;
+                } else {
+                    std::cerr << "Get failed: " << status.error_message() << std::endl;
+                }
+            } else if (command == "increaseRefCount") {
+                int id = CommandParser::parseRefCount(args);
+
+                memory_manager::RefCountRequest request;
+                request.set_id(id);
+
+                memory_manager::RefCountResponse response;
+                grpc::ClientContext context;
+
+                grpc::Status status = stub->IncreaseRefCount(&context, request, &response);
+                if (status.ok()) {
+                    std::cout << "IncreaseRefCount succeeded: New RefCount = " << response.new_ref_count() << std::endl;
+                    std::cout << "Message: " << response.message() << std::endl;
+                } else {
+                    std::cerr << "IncreaseRefCount failed: " << status.error_message() << std::endl;
+                }
+            } else if (command == "decreaseRefCount") {
+                int id = CommandParser::parseRefCount(args);
+
+                memory_manager::RefCountRequest request;
+                request.set_id(id);
+
+                memory_manager::RefCountResponse response;
+                grpc::ClientContext context;
+
+                grpc::Status status = stub->DecreaseRefCount(&context, request, &response);
+                if (status.ok()) {
+                    std::cout << "DecreaseRefCount succeeded: New RefCount = " << response.new_ref_count() << std::endl;
+                    std::cout << "Message: " << response.message() << std::endl;
+                } else {
+                    std::cerr << "DecreaseRefCount failed: " << status.error_message() << std::endl;
+                }
+            } else {
+                std::cerr << "Unknown command: " << command << std::endl;
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Error: " << e.what() << std::endl;
+        }
     }
 
     return 0;
