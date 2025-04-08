@@ -51,9 +51,18 @@ target_link_libraries(protolib gRPC::grpc++ protobuf::libprotobuf)
 
 
 # Execute Server and Client // Don't Edit
-add_executable(mem_mgr src/mem_mgr.cc)
+add_executable(mem_mgr 
+    src/mem_mgr.cc 
+    src/dumps/dumps.cc
+    src/services/create/create_service.cc
+    src/services/set/set_service.cc
+    src/services/get/get_service.cc
+    src/services/increase_ref/increase_ref_service.cc
+    src/services/decrease_ref/decrease_ref_service.cc
+)
+target_include_directories(mem_mgr PRIVATE src/dumps)
 target_link_libraries(mem_mgr protolib)
 
-add_executable(client src/client.cc)
+add_executable(client src/client.cc src/parsing/parsing.cc)
+target_include_directories(client PRIVATE src/parsing)
 target_link_libraries(client protolib)
-
