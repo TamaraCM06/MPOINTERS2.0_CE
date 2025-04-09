@@ -1,6 +1,6 @@
 #include "increase_ref_service.h"
 
-int increaseRefCount(int id) {
+int increaseRefCount(MemoryManager* memory_manager, int id) {
     std::cout << "IncreaseRefCount called with ID: " << id << std::endl;
-    return 2; // Example new reference count
+    return memory_manager->increaseRefCount(id);
 }

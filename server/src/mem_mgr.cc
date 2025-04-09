@@ -124,16 +124,34 @@ std::string MemoryManager::get(int id) {
     return retrieve_value_as_string(block.type, block.address, block.size);
 }
 
-// Dummy functions for other services
-
 int MemoryManager::increaseRefCount(int id) {
-    std::cout << "IncreaseRefCount operation is not implemented yet." << std::endl;
-    return -1;
+    auto it = allocations.find(id);
+    if (it == allocations.end()) {
+        std::cerr << "IncreaseRefCount failed: ID " << id << " not found." << std::endl;
+        return -1; // Return -1 to indicate failure
+    }
+
+    MemoryBlock& block = it->second;
+    block.ref_count++;
+    std::cout << "Increased reference count for ID " << id << " to " << block.ref_count << std::endl;
+    return block.ref_count;
 }
 
 int MemoryManager::decreaseRefCount(int id) {
-    std::cout << "DecreaseRefCount operation is not implemented yet." << std::endl;
-    return -1;
+    auto it = allocations.find(id);
+    if (it == allocations.end()) {
+        std::cerr << "DecreaseRefCount failed: ID " << id << " not found." << std::endl;
+        return -1; // Return -1 to indicate failure
+    }
+
+    MemoryBlock& block = it->second;
+    if (block.ref_count > 0) {
+        block.ref_count--;
+        std::cout << "Decreased reference count for ID " << id << " to " << block.ref_count << std::endl;
+    } else {
+        std::cerr << "DecreaseRefCount failed: Reference count for ID " << id << " is already 0." << std::endl;
+    }
+    return block.ref_count;
 }
 
 class MemoryManagerServiceImpl final : public memory_manager::MemoryManager::Service {
