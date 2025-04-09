@@ -16,6 +16,7 @@ private:
 public:
     Dumps(const std::string& folder, size_t memory_size);
     void initialize_base_chunk();
+    void update(size_t used_memory, size_t free_memory, int allocated_blocks, int next_id);
 };
 
 #endif // DUMPS_H

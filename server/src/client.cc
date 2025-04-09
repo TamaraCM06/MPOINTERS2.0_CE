@@ -46,8 +46,8 @@ int main(int argc, char* argv[]) {
 
                 grpc::Status status = stub->Create(&context, request, &response);
                 if (status.ok()) {
-                    std::cout << "Create succeeded: ID = " << response.id() << std::endl;
-                    std::cout << "Message: " << response.message() << std::endl;
+                    std::cout << "Call returned: ID = " << response.id() << std::endl;
+                    std::cout << response.message() << std::endl;
                 } else {
                     std::cerr << "Create failed: " << status.error_message() << std::endl;
                 }
