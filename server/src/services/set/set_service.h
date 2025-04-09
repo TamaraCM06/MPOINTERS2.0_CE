@@ -3,7 +3,8 @@
 
 #include <string>
 #include <iostream>
+#include "../mem_mgr.h"
 
-bool set(int id, const std::string& value);
+bool set(MemoryManager* memory_manager, int id, const std::string& value);
 
 #endif // SET_SERVICE_H
