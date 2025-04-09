@@ -80,4 +80,51 @@ inline bool convert_and_validate(const std::string& type, const std::string& val
     return true;
 }
 
+// Function to retrieve a value as a string based on its type
+inline std::string retrieve_value_as_string(const std::string& type, const void* address, size_t size) {
+    try {
+        if (type == "int") {
+            if (size < sizeof(int)) {
+                throw std::runtime_error("Block size too small for type int");
+            }
+            int value;
+            std::memcpy(&value, address, sizeof(int));
+            return std::to_string(value);
+        } else if (type == "float") {
+            if (size < sizeof(float)) {
+                throw std::runtime_error("Block size too small for type float");
+            }
+            float value;
+            std::memcpy(&value, address, sizeof(float));
+            return std::to_string(value);
+        } else if (type == "double") {
+            if (size < sizeof(double)) {
+                throw std::runtime_error("Block size too small for type double");
+            }
+            double value;
+            std::memcpy(&value, address, sizeof(double));
+            return std::to_string(value);
+        } else if (type == "char") {
+            if (size < sizeof(char)) {
+                throw std::runtime_error("Block size too small for type char");
+            }
+            char value;
+            std::memcpy(&value, address, sizeof(char));
+            return std::string(1, value);
+        } else if (type == "bool") {
+            if (size < sizeof(bool)) {
+                throw std::runtime_error("Block size too small for type bool");
+            }
+            bool value;
+            std::memcpy(&value, address, sizeof(bool));
+            return value ? "true" : "false";
+        } else {
+            throw std::runtime_error("Unsupported type: " + type);
+        }
+    } catch (const std::exception& e) {
+        std::cerr << "Error retrieving value: " << e.what() << std::endl;
+        return "Error";
+    }
+}
+
 #endif // UTILS_H

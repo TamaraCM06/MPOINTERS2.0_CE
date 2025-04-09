@@ -1,6 +1,8 @@
 #include "get_service.h"
 
-std::string get(int id) {
+std::string get(MemoryManager* memory_manager, int id) {
     std::cout << "Get called with ID: " << id << std::endl;
-    return "example_value"; // Example value
+
+    // Delegate the logic to MemoryManager
+    return memory_manager->get(id);
 }

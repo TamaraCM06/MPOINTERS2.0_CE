@@ -107,12 +107,24 @@ bool MemoryManager::set(int id, const std::string& value) {
     return true;
 }
 
-// Dummy functions for other services
-
 std::string MemoryManager::get(int id) {
-    std::cout << "Get operation is not implemented yet." << std::endl;
-    return "";
+    auto it = allocations.find(id);
+    if (it == allocations.end()) {
+        return "Error: ID " + std::to_string(id) + " does not exist.";
+    }
+
+    const MemoryBlock& block = it->second;
+
+    // Check if the block has a value set
+    if (block.ref_count == 0) { // Assuming ref_count == 0 means no value is set
+        return "No value assigned to ID " + std::to_string(id) + ". Type: " + block.type;
+    }
+
+    // Retrieve the value using the utility function
+    return retrieve_value_as_string(block.type, block.address, block.size);
 }
+
+// Dummy functions for other services
 
 int MemoryManager::increaseRefCount(int id) {
     std::cout << "IncreaseRefCount operation is not implemented yet." << std::endl;
