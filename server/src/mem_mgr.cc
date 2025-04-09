@@ -46,25 +46,36 @@ void MemoryManager::update_dumps() {
     size_t used_memory = memory_offset;
     size_t free_memory = memory_chunk_size - memory_offset;
     dumps.update(used_memory, free_memory, allocations.size(), next_id);
+}
 
-    // Debugging output
-    std::cout << "Debug: used_memory = " << used_memory << std::endl;
-    std::cout << "Debug: free_memory = " << free_memory << std::endl;
-    std::cout << "Debug: allocated_blocks = " << allocations.size() << std::endl;
-    std::cout << "Debug: next_id = " << next_id << std::endl;
+void MemoryManager::log_memory_state() {
+    std::ostringstream oss;
+    for (const auto& [block_id, mem_block] : allocations) {
+        oss << "{\n"
+            << "  \"id\": " << block_id << ",\n"
+            << "  \"size\": " << mem_block.size << ",\n"
+            << "  \"type\": \"" << mem_block.type << "\",\n"
+            << "  \"refCount\": " << mem_block.ref_count << ",\n"
+            << "  \"ptr\": \"" << reinterpret_cast<uintptr_t>(mem_block.address) << "\",\n"
+            << "  \"status\": \"" << (mem_block.ref_count > 0 ? "allocated" : "freed") << "\"\n"
+            << "}\n";
+    }
+
+    // Pass the formatted string to the Dumps class
+    dumps.create_detailed_dump_file(oss.str());
 }
 
 int MemoryManager::create(int size, const std::string& type) {
-    // Verificar si hay suficiente espacio
+    // Check if there is enough memory
     if (memory_offset + static_cast<size_t>(size) > memory_chunk_size) {
         std::cerr << "Not enough memory to allocate " << size << " bytes" << std::endl;
         return -1;
     }
 
-    // Asignar memoria
+    // Allocate memory
     void* block_address = static_cast<char*>(memory_chunk) + memory_offset;
 
-    // Crear un nuevo bloque de memoria
+    // Create a new memory block
     MemoryBlock block = {
         .address = block_address,
         .size = static_cast<size_t>(size),
@@ -72,19 +83,22 @@ int MemoryManager::create(int size, const std::string& type) {
         .ref_count = 1
     };
 
-    // Almacenar el bloque en el mapa de asignaciones
+    // Store the block in the allocations map
     int id = next_id++;
     allocations[id] = block;
 
-    // Actualizar el desplazamiento de memoria
+    // Update the memory offset
     memory_offset += static_cast<size_t>(size);
 
     std::cout << "Allocated " << size << " bytes for type " << type << " with ID " << id << std::endl;
 
-    // Actualizar el archivo de volcado
+    // Update the base chunk file
     update_dumps();
 
-    return id; // Retornar el ID único
+    // Log the memory state
+    log_memory_state();
+
+    return id; // Return the unique ID
 }
 
 
@@ -92,18 +106,19 @@ bool MemoryManager::set(int id, const std::string& value) {
     auto it = allocations.find(id);
     if (it == allocations.end()) {
         std::cerr << "Set failed: ID " << id << " not found." << std::endl;
-        return false; // Retornar false si el ID no existe
+        return false;
     }
 
     MemoryBlock& block = it->second;
 
-    // Validar y convertir el valor
+    // Validate and convert the value
     if (!convert_and_validate(block.type, value, block.address, block.size)) {
         std::cerr << "Set failed: Conversion or validation failed for ID " << id << "." << std::endl;
         return false;
     }
 
     std::cout << "Set successful for ID " << id << ": " << value << std::endl;
+
     return true;
 }
 
@@ -128,12 +143,16 @@ int MemoryManager::increaseRefCount(int id) {
     auto it = allocations.find(id);
     if (it == allocations.end()) {
         std::cerr << "IncreaseRefCount failed: ID " << id << " not found." << std::endl;
-        return -1; // Return -1 to indicate failure
+        return -1;
     }
 
     MemoryBlock& block = it->second;
     block.ref_count++;
     std::cout << "Increased reference count for ID " << id << " to " << block.ref_count << std::endl;
+
+    // Log the memory state
+    log_memory_state();
+
     return block.ref_count;
 }
 
@@ -141,7 +160,7 @@ int MemoryManager::decreaseRefCount(int id) {
     auto it = allocations.find(id);
     if (it == allocations.end()) {
         std::cerr << "DecreaseRefCount failed: ID " << id << " not found." << std::endl;
-        return -1; // Return -1 to indicate failure
+        return -1;
     }
 
     MemoryBlock& block = it->second;
@@ -151,6 +170,10 @@ int MemoryManager::decreaseRefCount(int id) {
     } else {
         std::cerr << "DecreaseRefCount failed: Reference count for ID " << id << " is already 0." << std::endl;
     }
+
+    // Log the memory state
+    log_memory_state();
+
     return block.ref_count;
 }
 

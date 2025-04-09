@@ -65,3 +65,31 @@ void Dumps::update(size_t used_memory, size_t free_memory, int allocated_blocks,
     file.close();
     std::cout << "Updated Base_chunk.txt at: " << base_chunk_file << std::endl;
 }
+
+void Dumps::create_detailed_dump_file(const std::string& formatted_memory_blocks) {
+    // Get the current time
+    auto now = std::chrono::system_clock::now();
+    auto time_t_now = std::chrono::system_clock::to_time_t(now);
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
+
+    // Format the timestamp
+    std::ostringstream timestamp;
+    timestamp << std::put_time(std::localtime(&time_t_now), "%Y-%m-%d_%H:%M:%S")
+              << ":" << std::setfill('0') << std::setw(3) << ms.count();
+
+    // Create the dump file name
+    std::string filename = dump_folder + "/dump_" + timestamp.str() + ".txt";
+
+    // Open the file for writing
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        throw std::runtime_error("Failed to create dump file: " + filename);
+    }
+
+    // Write the memory blocks
+    file << "Memory Blocks:\n";
+    file << formatted_memory_blocks;
+
+    file.close();
+    std::cout << "Created detailed dump file: " << filename << std::endl;
+}

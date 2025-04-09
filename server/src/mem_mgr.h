@@ -33,6 +33,7 @@ public:
     int get_next_id() const;
 
     void update_dumps();
+    void log_memory_state();
 
     int create(int size, const std::string& type);
     bool set(int id, const std::string& value);
