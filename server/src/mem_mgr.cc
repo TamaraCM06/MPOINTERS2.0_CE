@@ -14,7 +14,7 @@
 #include "services/get/get_service.h"
 #include "services/increase_ref/increase_ref_service.h"
 #include "services/decrease_ref/decrease_ref_service.h"
-
+#include "services/utils.h"
 
 MemoryManager::MemoryManager(size_t size_mb, const std::string& folder)
     : memory_chunk_size(size_mb * 1024 * 1024),
@@ -87,11 +87,27 @@ int MemoryManager::create(int size, const std::string& type) {
     return id; // Retornar el ID único
 }
 
-// Dummy functions for other services
+
 bool MemoryManager::set(int id, const std::string& value) {
-    std::cout << "Set operation is not implemented yet." << std::endl;
-    return false;
+    auto it = allocations.find(id);
+    if (it == allocations.end()) {
+        std::cerr << "Set failed: ID " << id << " not found." << std::endl;
+        return false; // Retornar false si el ID no existe
+    }
+
+    MemoryBlock& block = it->second;
+
+    // Validar y convertir el valor
+    if (!convert_and_validate(block.type, value, block.address, block.size)) {
+        std::cerr << "Set failed: Conversion or validation failed for ID " << id << "." << std::endl;
+        return false;
+    }
+
+    std::cout << "Set successful for ID " << id << ": " << value << std::endl;
+    return true;
 }
+
+// Dummy functions for other services
 
 std::string MemoryManager::get(int id) {
     std::cout << "Get operation is not implemented yet." << std::endl;
