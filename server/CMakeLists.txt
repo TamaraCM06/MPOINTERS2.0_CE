@@ -50,26 +50,23 @@ target_include_directories(protolib PUBLIC ${GENERATED_PROTO_DIR})
 target_link_libraries(protolib gRPC::grpc++ protobuf::libprotobuf)
 
 
-# Execute Server and Client // Don't Edit
-add_executable(mem_mgr 
-    src/mem_mgr.cc 
-    src/dumps/dumps.cc
-    src/services/create/create_service.cc
-    src/services/set/set_service.cc
-    src/services/get/get_service.cc
-    src/services/increase_ref/increase_ref_service.cc
-    src/services/decrease_ref/decrease_ref_service.cc
-)
-target_include_directories(mem_mgr PRIVATE src/dumps)
-target_link_libraries(mem_mgr protolib)
+    # Execute Server and Client // Don't Edit
+    add_executable(mem_mgr 
+        src/mem_mgr.cc 
+        src/dumps/dumps.cc
+        src/services/create/create_service.cc
+        src/services/set/set_service.cc
+        src/services/get/get_service.cc
+        src/services/increase_ref/increase_ref_service.cc
+        src/services/decrease_ref/decrease_ref_service.cc
+    )
+    target_include_directories(mem_mgr PRIVATE src/dumps)
+    target_link_libraries(mem_mgr protolib)
 
-add_executable(client src/client.cc src/parsing/parsing.cc) 
-target_include_directories(client PRIVATE src/parsing)
-target_link_libraries(client protolib)
-
-# Add test_list target
-add_executable(test_list 
-    src/test_list.cpp
-)
-target_include_directories(test_list PRIVATE src/mpointer)
-target_link_libraries(test_list protolib)
+    # Add the client target
+    add_executable(client 
+        src/client.cc 
+        src/parsing/parsing.cc 
+    )
+    target_include_directories(client PRIVATE src/parsing src/mpointer)
+    target_link_libraries(client protolib)
