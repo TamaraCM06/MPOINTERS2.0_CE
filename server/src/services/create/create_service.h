@@ -2,8 +2,8 @@
 #define CREATE_SERVICE_H
 
 #include <string>
-#include <iostream>
+#include "../../mem_mgr.h"
 
-int create(int size, const std::string& type);
+int create(MemoryManager* memory_manager, int size, const std::string& type);
 
 #endif // CREATE_SERVICE_H

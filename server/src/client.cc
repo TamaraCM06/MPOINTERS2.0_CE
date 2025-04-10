@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
 
                 grpc::Status status = stub->Create(&context, request, &response);
                 if (status.ok()) {
-                    std::cout << "Create succeeded: ID = " << response.id() << std::endl;
+                    std::cout << "Call returned: ID = " << response.id() << std::endl;
                     std::cout << "Message: " << response.message() << std::endl;
                 } else {
                     std::cerr << "Create failed: " << status.error_message() << std::endl;
@@ -63,7 +63,7 @@ int main(int argc, char* argv[]) {
 
                 grpc::Status status = stub->Set(&context, request, &response);
                 if (status.ok()) {
-                    std::cout << "Set succeeded: " << response.message() << std::endl;
+                    std::cout << "Message: " << response.message() << std::endl;
                 } else {
                     std::cerr << "Set failed: " << status.error_message() << std::endl;
                 }
@@ -78,7 +78,7 @@ int main(int argc, char* argv[]) {
 
                 grpc::Status status = stub->Get(&context, request, &response);
                 if (status.ok()) {
-                    std::cout << "Get succeeded: Value = " << response.value() << std::endl;
+                    std::cout << "Call returned: Value = " << response.value() << std::endl;
                     std::cout << "Message: " << response.message() << std::endl;
                 } else {
                     std::cerr << "Get failed: " << status.error_message() << std::endl;
@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
 
                 grpc::Status status = stub->IncreaseRefCount(&context, request, &response);
                 if (status.ok()) {
-                    std::cout << "IncreaseRefCount succeeded: New RefCount = " << response.new_ref_count() << std::endl;
+                    std::cout << "Call returned: New RefCount = " << response.new_ref_count() << std::endl;
                     std::cout << "Message: " << response.message() << std::endl;
                 } else {
                     std::cerr << "IncreaseRefCount failed: " << status.error_message() << std::endl;
@@ -110,7 +110,7 @@ int main(int argc, char* argv[]) {
 
                 grpc::Status status = stub->DecreaseRefCount(&context, request, &response);
                 if (status.ok()) {
-                    std::cout << "DecreaseRefCount succeeded: New RefCount = " << response.new_ref_count() << std::endl;
+                    std::cout << "Call returned: New RefCount = " << response.new_ref_count() << std::endl;
                     std::cout << "Message: " << response.message() << std::endl;
                 } else {
                     std::cerr << "DecreaseRefCount failed: " << status.error_message() << std::endl;
