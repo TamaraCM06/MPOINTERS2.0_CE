@@ -45,6 +45,7 @@ public:
     int decreaseRefCount(int id);
 
     void deallocate(int id);
+    void defragment();
 
     void set_garbage_collector(GarbageCollector* gc) {
         garbage_collector = gc;

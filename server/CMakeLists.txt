@@ -49,7 +49,6 @@ target_include_directories(protolib PUBLIC ${GENERATED_PROTO_DIR})
 # Enlazar con las librerías de protobuf y grpc
 target_link_libraries(protolib gRPC::grpc++ protobuf::libprotobuf)
 
-
 # Execute Server and Client // Don't Edit
 add_executable(mem_mgr 
     src/mem_mgr.cc 
@@ -64,15 +63,13 @@ add_executable(mem_mgr
 target_include_directories(mem_mgr PRIVATE src/dumps)
 target_link_libraries(mem_mgr protolib)
 
+# Define the Defragmenter dependency
+target_include_directories(mem_mgr PRIVATE src/Defragmenter)
+target_include_directories(mem_mgr PRIVATE src)
+
 add_executable(client src/client.cc src/parsing/parsing.cc) 
 target_include_directories(client PRIVATE src/parsing)
 target_link_libraries(client protolib)
 
-
-    # Add the client target
-    add_executable(client 
-        src/client.cc 
-        src/parsing/parsing.cc 
-    )
-    target_include_directories(client PRIVATE src/parsing src/mpointer)
-    target_link_libraries(client protolib)
+target_include_directories(client PRIVATE src/parsing src/mpointer)
+target_link_libraries(client protolib)

@@ -16,6 +16,7 @@
 #include "services/decrease_ref/decrease_ref_service.h"
 #include "services/utils.h"
 #include "garbage_collector/garbage_collector.h"
+#include "Defragmenter/Defragmenter.h"
 
 
 MemoryManager::MemoryManager(size_t size_mb, const std::string& folder)
@@ -48,6 +49,10 @@ void MemoryManager::update_dumps() {
     size_t used_memory = memory_offset;
     size_t free_memory = memory_chunk_size - memory_offset;
     dumps.update(used_memory, free_memory, allocations.size(), next_id);
+}
+
+void MemoryManager::defragment() {
+    Defragmenter::defragment(memory_chunk, memory_chunk_size, allocations, memory_offset);
 }
 
 void MemoryManager::log_memory_state() {

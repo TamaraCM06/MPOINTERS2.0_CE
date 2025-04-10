@@ -82,6 +82,7 @@ void GarbageCollector::garbage_collection(){
                 std::cout << "Memory for object " << id << "ready for defragmentation" << std::endl;
             }
             memory_manager->update_dumps();
+            memory_manager->defragment();
             lock.lock();
     
         }
