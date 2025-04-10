@@ -65,10 +65,9 @@ void Dumps::update(size_t used_memory, size_t free_memory, int allocated_blocks,
     file.close();
     std::cout << "Updated Base_chunk.txt at: " << base_chunk_file << std::endl;
 }
-
 void Dumps::create_detailed_dump_file(const std::string& formatted_memory_blocks) {
-    // Get the current time
-    auto now = std::chrono::system_clock::now();
+    // Get the current time and subtract 6 hours
+    auto now = std::chrono::system_clock::now() - std::chrono::hours(6);
     auto time_t_now = std::chrono::system_clock::to_time_t(now);
     auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()) % 1000;
 
