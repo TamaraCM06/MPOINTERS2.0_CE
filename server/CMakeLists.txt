@@ -59,6 +59,7 @@ add_executable(mem_mgr
     src/services/get/get_service.cc
     src/services/increase_ref/increase_ref_service.cc
     src/services/decrease_ref/decrease_ref_service.cc
+    src/garbage_collector/garbage_collector.cc
 )
 target_include_directories(mem_mgr PRIVATE src/dumps)
 target_link_libraries(mem_mgr protolib)

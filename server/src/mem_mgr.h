@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include "dumps/dumps.h"
 
+class GarbageCollector;
+
 struct MemoryBlock {
     void* address;
     size_t size;
@@ -21,6 +23,7 @@ private:
     int next_id = 1;
     std::unordered_map<int, MemoryBlock> allocations;
     Dumps dumps;
+    GarbageCollector* garbage_collector = nullptr;
 
 public:
     MemoryManager(size_t size_mb, const std::string& folder);
@@ -40,6 +43,16 @@ public:
     std::string get(int id);
     int increaseRefCount(int id);
     int decreaseRefCount(int id);
+
+    void deallocate(int id);
+
+    void set_garbage_collector(GarbageCollector* gc) {
+        garbage_collector = gc;
+    }
+
+    const std::unordered_map<int, MemoryBlock>& get_allocations() const {
+        return allocations;
+    }
 };
 
 #endif // MEM_MGR_H
