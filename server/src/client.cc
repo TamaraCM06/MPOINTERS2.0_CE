@@ -4,6 +4,7 @@
 #include "proto/hello.grpc.pb.h"
 #include "proto/hello.pb.h"
 #include "parsing/parsing.h"
+#include "mpointer/MPointer.h" 
 
 int main(int argc, char* argv[]) {
     // Default server address
@@ -23,7 +24,7 @@ int main(int argc, char* argv[]) {
     while (true) {
         // Read command from the console
         std::string input;
-        std::cout << "Enter command (create, set, get, increaseRefCount, decreaseRefCount, or exit): ";
+        std::cout << "Enter command (linked_list, create, set, get, increaseRefCount, decreaseRefCount, or exit): ";
         std::getline(std::cin, input);
 
         if (input == "exit") {
@@ -33,8 +34,27 @@ int main(int argc, char* argv[]) {
         try {
             // Parse the command
             auto [command, args] = CommandParser::parseCommand(input);
+            if (command == "linked_list") {
+                // Initialize MPointer
+                MPointer<int>::Init("0.0.0.0:9999");
 
-            if (command == "create") {
+                // Create nodes
+                MPointer<int> head = MPointer<int>::New();
+                MPointer<int> second = MPointer<int>::New();
+                MPointer<int> third = MPointer<int>::New();
+
+                // Set values
+                *head = 10;
+                *second = 20;
+                *third = 30;
+
+                // Link nodes
+                head.setNext(second);
+                second.setNext(third);
+                
+                std::cout << "Linked list: " << *head << " -> " << *second << " -> " << *third << " -> " << "null" <<std::endl;
+                
+            } else if(command == "create") {
                 auto [size, type] = CommandParser::parseCreate(args);
 
                 memory_manager::CreateRequest request;

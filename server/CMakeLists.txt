@@ -68,9 +68,11 @@ add_executable(client src/client.cc src/parsing/parsing.cc)
 target_include_directories(client PRIVATE src/parsing)
 target_link_libraries(client protolib)
 
-# Add test_list target
-add_executable(test_list 
-    src/test_list.cpp
-)
-target_include_directories(test_list PRIVATE src/mpointer)
-target_link_libraries(test_list protolib)
+
+    # Add the client target
+    add_executable(client 
+        src/client.cc 
+        src/parsing/parsing.cc 
+    )
+    target_include_directories(client PRIVATE src/parsing src/mpointer)
+    target_link_libraries(client protolib)
