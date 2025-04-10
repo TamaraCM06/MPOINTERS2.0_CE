@@ -15,6 +15,8 @@
 #include "services/increase_ref/increase_ref_service.h"
 #include "services/decrease_ref/decrease_ref_service.h"
 #include "services/utils.h"
+#include "garbage_collector/garbage_collector.h"
+
 
 MemoryManager::MemoryManager(size_t size_mb, const std::string& folder)
     : memory_chunk_size(size_mb * 1024 * 1024),
@@ -167,7 +169,12 @@ int MemoryManager::decreaseRefCount(int id) {
     if (block.ref_count > 0) {
         block.ref_count--;
         std::cout << "Decreased reference count for ID " << id << " to " << block.ref_count << std::endl;
+            // If refcount == zero, notify garbage collector
+            if (block.ref_count == 0 && garbage_collector != nullptr) {
+                garbage_collector->notify(id);
+            }
     } else {
+            
         std::cerr << "DecreaseRefCount failed: Reference count for ID " << id << " is already 0." << std::endl;
     }
 
@@ -262,6 +269,21 @@ void parse_arguments(int argc, char* argv[], int& port, size_t& mem_size, std::s
     }
 }
 
+void MemoryManager::deallocate(int id) {
+    auto it = allocations.find(id);
+    if (it != allocations.end()) {
+        MemoryBlock& block = it->second;
+        std::cout << "Deallocated memory for ID " << id << std::endl;
+        std::memset(block.address, 0, block.size);
+        allocations.erase(it);
+        memory_offset -= static_cast<size_t>(block.size);
+
+
+    } else {
+        std::cerr << "Deallocate failed: ID " << id << " not found." << std::endl;
+    }
+}
+
 int main(int argc, char* argv[]) {
     try {
         int port = 9999;
@@ -271,6 +293,13 @@ int main(int argc, char* argv[]) {
         parse_arguments(argc, argv, port, mem_size, dump_folder);
 
         MemoryManager memory_manager(mem_size, dump_folder);
+
+
+        // Create and start the garbage collector
+        GarbageCollector garbage_collector(&memory_manager);
+        memory_manager.set_garbage_collector(&garbage_collector);
+        garbage_collector.start();
+
 
         std::string server_address = "0.0.0.0:" + std::to_string(port);
         MemoryManagerServiceImpl service(&memory_manager);
@@ -282,6 +311,8 @@ int main(int argc, char* argv[]) {
 
         std::cout << "Server listening on " << server_address << std::endl;
         server->Wait();
+
+        garbage_collector.stop();
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
         return EXIT_FAILURE;
